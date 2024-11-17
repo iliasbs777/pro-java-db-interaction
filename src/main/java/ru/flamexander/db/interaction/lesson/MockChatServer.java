@@ -16,10 +16,10 @@ public class MockChatServer {
 //            usersDao.save(new User(null, "A", "A", "A"));
 //            System.out.println(usersDao.getAllUsers());
             AbstractRepository<User> usersRepository = new AbstractRepository<>(dataSource, User.class);
-            usersRepository.save(new User(null, "B", "B", "B"));
+            //usersRepository.save(new User(null, "B", "B", "B"));
             System.out.println(usersDao.getAllUsers());
 
-
+            DbMigrator.migrate(dataSource);
 
 
 //            AuthenticationService authenticationService = new AuthenticationService(usersDao);
@@ -30,6 +30,7 @@ public class MockChatServer {
 //            authenticationService.register("A", "A", "A");
             // Основная работа сервера чата
         } catch (SQLException e) {
+            System.out.println("Сервер чата завершил свою работу c SQLException " + e.getMessage());
             e.printStackTrace();
         } finally {
             if (dataSource != null) {
