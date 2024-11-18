@@ -13,11 +13,9 @@ public class MockChatServer {
             UsersDao usersDao = new UsersDao(dataSource);
             usersDao.init();
             System.out.println(usersDao.getAllUsers());
-//            usersDao.save(new User(null, "A", "A", "A"));
-//            System.out.println(usersDao.getAllUsers());
-            AbstractRepository<User> usersRepository = new AbstractRepository<>(dataSource, User.class);
-            //usersRepository.save(new User(null, "B", "B", "B"));
-            System.out.println(usersDao.getAllUsers());
+            System.out.println("findById 1 = " + usersDao.findById("select * from users where id = ", 1L));
+            //usersDao.save(new User(null, "B", "B", "B"));
+            System.out.println("findAll" + usersDao.findAll("select * from users"));
 
             DbMigrator.migrate(dataSource);
 

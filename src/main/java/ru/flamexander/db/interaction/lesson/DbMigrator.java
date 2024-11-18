@@ -24,7 +24,6 @@ public class DbMigrator {
         List<String> schemaHistoryFileNames = schemaHistoryDao.getAllSchemaHistoryFileNames();
         System.out.println(schemaHistoryFileNames);
 
-        AbstractRepository<SchemaHistory> schemaHistoryRepository = new AbstractRepository<>(dataSource, SchemaHistory.class);
         FileService fileService = new FileService();
 
         // Получение списка всех имен файлов а каталоге миграции
@@ -51,7 +50,7 @@ public class DbMigrator {
                     fileContent = FileService.getFileContent(file);
                     System.out.println("Содержимое файла: " + fileContent);
                     schemaHistoryDao.executeCommand(fileContent);
-                    schemaHistoryRepository.save(new SchemaHistory(null, file.getName()));
+                    schemaHistoryDao.save(new SchemaHistory(null, file.getName()));
                 } catch (IOException e) {
                     System.out.println("Файл не найден.");
                     throw new RuntimeException(e);

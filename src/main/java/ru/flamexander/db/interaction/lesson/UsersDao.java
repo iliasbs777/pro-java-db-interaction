@@ -7,10 +7,21 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-public class UsersDao {
+public class UsersDao extends AbstractRepository<User> {
+    @Override
+    protected User resultSetToEntity(ResultSet resultSet) throws SQLException {
+        return new User(
+                resultSet.getLong("id"),
+                resultSet.getString("login"),
+                resultSet.getString("password"),
+                resultSet.getString("nickname")
+        );
+    }
+
     private DataSource dataSource;
 
     public UsersDao(DataSource dataSource) {
+        super(dataSource, User.class);
         this.dataSource = dataSource;
     }
 
@@ -58,8 +69,12 @@ public class UsersDao {
         return Collections.unmodifiableList(result);
     }
 
-    public void save(User user) throws SQLException {
-        dataSource.getStatement().executeUpdate(String.format("insert into users (login, password, nickname) values ('%s', '%s', '%s');", user.getLogin(), user.getPassword(), user.getNickname()));
+    public void save(User user) {
+        try {
+            dataSource.getStatement().executeUpdate(String.format("insert into users (login, password, nickname) values ('%s', '%s', '%s');", user.getLogin(), user.getPassword(), user.getNickname()));
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public void saveAll(List<User> users) throws SQLException {

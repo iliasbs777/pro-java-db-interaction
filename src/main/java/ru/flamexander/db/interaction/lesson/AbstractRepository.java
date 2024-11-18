@@ -2,12 +2,15 @@ package ru.flamexander.db.interaction.lesson;
 
 import java.lang.reflect.Field;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
-public class AbstractRepository<T> {
+public abstract class AbstractRepository<T> {
     private DataSource dataSource;
     private PreparedStatement psInsert;
     private List<Field> cachedFields;
@@ -61,5 +64,32 @@ public class AbstractRepository<T> {
         } catch (SQLException e) {
             throw new ORMException("Не удалось проинициализировать репозиторий для класса " + cls.getName());
         }
+    }
+
+    protected abstract T resultSetToEntity(ResultSet resultSet) throws SQLException;
+
+    public Optional<T> findById(String query, Long id) {
+        try (ResultSet resultSet = dataSource.getStatement().executeQuery(query + id)) {
+            if (resultSet.next() != false) {
+                T entity = resultSetToEntity(resultSet);
+                return Optional.of(entity);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return Optional.empty();
+    }
+
+    public List<T> findAll(String query) {
+        List<T> resultList = new ArrayList<>();
+        try (ResultSet resultSet = dataSource.getStatement().executeQuery(query)) {
+            while (resultSet.next() != false) {
+                resultList.add(resultSetToEntity(resultSet));
+                return resultList;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }
