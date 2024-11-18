@@ -1,0 +1,1 @@
+insert into users (login, password, nickname) values ('admin', 'qwerty123!', 'admin');
